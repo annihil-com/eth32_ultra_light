@@ -1,0 +1,225 @@
+// ETH32 - an Enemy Territory cheat for windows
+// Copyright (c) 2007 eth32 team
+// www.cheatersutopia.com & www.nixcoders.org
+
+#pragma once
+
+#define MAX_SETTING_VALUES	10
+
+typedef enum {
+	SETTING_INT,
+	SETTING_FLOAT,
+	SETTING_BOOL,
+	SETTING_VEC3,
+	SETTING_VEC4,
+	SETTING_BYTE3,
+	SETTING_STRING,
+	MAX_SETTINGS
+} settingtype_t;
+
+typedef struct {
+	float value;
+	char *text;
+} settingvalue_t;
+
+typedef struct {
+	char *name;
+	char *defaultValue;
+	settingtype_t type;
+	void *target;
+	char *description;
+	float min, max;
+	settingvalue_t values[MAX_SETTING_VALUES];
+} settingdef_t;
+
+const static settingdef_t settingsDefs[] = 
+{
+	// Name				Default			Type				Target
+	//	Description
+	//	Min / Max
+	//	  Value				TextValue
+	{ "aim_aimtype",		"1",			SETTING_INT,		(void*)&eth32.settings.aimType,
+		"determines when the aimbot is to aim",
+		AIM_OFF, AIM_MAX-1,
+		{
+			{ (int)AIM_OFF,		"off" },
+			{ (int)AIM_ON_FIRE,	"onfire" },
+			{ (int)AIM_ON_BUTTON, "onbutton" },
+			{ (int)AIM_ALWAYS,	"always" },
+		},
+	},
+	{ "aim_aimsort",		"1",			SETTING_INT,		(void*)&eth32.settings.aimSort,
+		"sets type of sort to be used with valid targets",
+		SORT_OFF, SORT_MAX-1,
+		{
+			{ (int)SORT_OFF,			"off" },
+			{ (int)SORT_DISTANCE,	"distance" },
+			{ (int)SORT_CROSSHAIR,	"crosshair" },
+			{ (int)SORT_KDRATIO,		"kdratio" },
+			{ (int)SORT_ACCURACY,	"accuracy" },
+			{ (int)SORT_TARGETING,	"targeting" },
+			{ (int)SORT_THREAT,		"threat" },
+		},
+	},
+	{ "aim_autofire",		"false",		SETTING_BOOL,		(void*)&eth32.settings.autofire,
+		"aimbot will fire for you when target available\n   (note: autofire must be turned on per weapon as well)",
+	},
+	{ "aim_locktarget",		"false",		SETTING_BOOL,		(void*)&eth32.settings.lockTarget,
+		"once a target is aquired, aimbot will stay on this target while it remains visible",
+	},
+	{ "aim_headbody",		"4",			SETTING_INT,		(void*)&eth32.settings.headbody,
+		"determines if the aimbot uses the head or body and which order",
+		0, AP_MAX-1,
+		{
+			{ (int)BODY_ONLY,		"bodyonly" },
+			{ (int)HEAD_ONLY,		"headonly" },
+			{ (int)BODY_HEAD,		"bodyfirst" },
+			{ (int)HEAD_BODY,		"headfirst" },
+			{ (int)HEAD_PRIORITY,	"headpriority" },
+		},
+	},
+	{ "aim_atkvalid",		"false",		SETTING_BOOL,		(void*)&eth32.settings.atkValidate,
+		"inhibits firing, even manually, until a valid target is visible",
+	},
+	{ "aim_hitbox",			"2",			SETTING_INT,		(void*)&eth32.settings.hitboxType,
+		"set the hitbox style to use for aimbot",
+		HITBOX_OFF, HITBOX_MAX-1,
+		{
+			{ (int)HITBOX_ETMAIN,	"etmain" },
+			{ (int)HITBOX_ETPUB,		"etpub" },
+			{ (int)HITBOX_ETPRO,		"etpro" },
+			{ (int)HITBOX_GENERIC,	"generic" },
+			{ (int)HITBOX_CUSTOM,	"custom" },
+		},
+	},
+	{ "aim_trace",			"1",			SETTING_INT,		(void*)&eth32.settings.traceType,
+		"set the style of trace used to determine if a target is visible",
+		0, TRACE_MAX-2,
+		{
+			{ (int)TRACE_CENTER,				"center" },
+			{ (int)TRACE_XTRACE,				"xtrace" },
+			{ (int)TRACE_STATIC,				"static" },
+		},
+	},
+	
+	{ "aim_fov",			"360.0",		SETTING_FLOAT,		(void*)&eth32.settings.fov,
+		"set the field of vision that the aimbot can select targets from",
+		0, 360,
+	},
+	{ "aim_autoPredBots",		"true",		SETTING_BOOL,		(void*)&eth32.settings.autoPredBots,
+		"auto predict bots",
+	},
+	{ "aim_predtarget",		"0",			SETTING_FLOAT,		(void*)&eth32.settings.pred,
+		"set amount of prediction to be applied to targets",
+		-1, 1,
+	},
+	{ "aim_predbot",		"-0.45",			SETTING_FLOAT,		(void*)&eth32.settings.predbot,
+		"set amount of prediction to be applied to bots",
+		-1, 1,
+	},
+	{ "aim_predself",		"0",			SETTING_FLOAT,		(void*)&eth32.settings.predSelf,
+		"set amount to prediction to applied to our own movement (only for manual)",
+		-1, 1,
+	},
+	{ "aim_predself_type",	"0",			SETTING_INT,		(void*)&eth32.settings.predSelfType,
+		"set the type of self prediction to apply",
+		0, SPR_MAX-1,
+	},
+	{ "aim_dynamicHitbox",	"0.0",			SETTING_FLOAT,		(void*)&eth32.settings.dynamicHitboxScale,
+		"set how much a hitbox will scale based on player movement",
+		0, 10,
+	},
+	{ "pk3name",		"eth32.pk3",	SETTING_STRING,		(void*)eth32.settings.pk3file,
+		"the main eth32 pk3 file name",
+	},
+	{ "aim_autopoints",		"0",			SETTING_INT,		(void*)&eth32.settings.autoPoints,
+		"set automatic generation of multi aimpoints",
+		0, AUTOPT_MAX-1,
+		{
+			{ (int)AUTOPT_OFF,	"off" },
+			{ (int)AUTOPT_LOW,	"low" },
+			{ (int)AUTOPT_HIGH,	"high" },
+		},
+	},
+	{ "aim_autocrouch",		"false",		SETTING_BOOL,		(void*)&eth32.settings.autoCrouch,
+		"enable auto crouching when target is visible",
+	},
+	{ "aim_preaim",		"false",		SETTING_BOOL,			(void*)&eth32.settings.preAim,
+		"preaim targets",
+	},
+	{ "aim_preaimtime",		"400.0",		SETTING_FLOAT,			(void*)&eth32.settings.preAimTime,
+		"preaim time - higher is earlier aiming",
+		0, 5000,
+	},
+
+	{ "aim_preshoot",		"false",		SETTING_BOOL,			(void*)&eth32.settings.preShoot,
+		"pre-shoot at targets before they are logically visible",
+	},
+	{ "aim_preshoottime",	"50.0",			SETTING_FLOAT,			(void*)&eth32.settings.preShootTime,
+		"preshoot time - higher means earlier shot (and higher chance of miss)",
+		0, 5000,
+	},
+	// custom hitbox
+	{ "aim_hitbox_stand",		"0 0 0",		SETTING_VEC3,		(void*)Aimbot.customHitbox.stand_offset,
+		"set the hitbox center point for a standing player",
+	},
+	{ "aim_hitbox_crouch",		"0 0 0",		SETTING_VEC3,		(void*)Aimbot.customHitbox.crouch_offset,
+		"set the hitbox center point for a crouching player",
+	},
+	{ "aim_hitbox_prone",		"0 0 0",		SETTING_VEC3,		(void*)Aimbot.customHitbox.prone_offset,
+		"set the hitbox center point for a prone player",
+	},
+	{ "aim_hitbox_run",		"0 0 0",		SETTING_VEC3,		(void*)Aimbot.customHitbox.stand_offset_moving,
+		"set the hitbox center point for a running player",
+	},
+	{ "aim_hitbox_crawl",		"0 0 0",		SETTING_VEC3,		(void*)Aimbot.customHitbox.crouch_offset_moving,
+		"set the hitbox center point for a crawling player",
+	},
+	{ "aim_hitbox_size",		"11 10 9",		SETTING_VEC3,		(void*)Aimbot.customHitbox.size,
+		"set the size of head hitbox (length, width, height)",
+	},
+	{ "aim_animcor", "-0.150", SETTING_FLOAT, (void*)&eth32.settings.animCorrection,
+		"animation correction for aimbot",
+		-10.0, 10.0,
+	},
+	{ "aim_nosnipercrouch",		"true",		SETTING_BOOL,		(void*)&eth32.settings.noSniperCrouch,
+		"no auto crouch for sniper weapons",
+	},
+	{ "misc_killsounds",		"false",		SETTING_BOOL,		(void*)&eth32.settings.killSounds,
+		"enables sounds to be played when a player is killed",
+	},
+	{ "misc_hitsounds",		"false",		SETTING_BOOL,		(void*)&eth32.settings.hitsounds,
+		"enable sounds when you do damage to another player",
+	},
+	{ "misc_headhbtime",		"40",			SETTING_INT,		(void*)&eth32.settings.headRailTime,
+		"set head hitbox stay time (in msec)",
+		0, 1000,
+	},
+	{ "misc_bodyhbtime",		"40",			SETTING_INT,		(void*)&eth32.settings.bodyRailTime,
+		"set body hitbox stay time (in msec)",
+		0, 1000,
+	},
+	{ "misc_vw_origviewvalues",	"false",		SETTING_BOOL,		(void*)&eth32.settings.origViewValues,
+		"enable unmodified view calculations",
+	},
+	{ "misc_vw_interpolatedps",	"true",			SETTING_BOOL,		(void*)&eth32.settings.interpolatedPs,
+		"enable interpolated playerstate",
+	},
+	{ "misc_vw_damagefeedback",	"false",		SETTING_BOOL,		(void*)&eth32.settings.dmgFeedback,
+		"enable damage feedback",
+	},
+	{ "misc_autopush",		"0",			SETTING_INT,	(void*)&eth32.settings.autoPush,
+		"enable auto push players",
+		0, MAX_AUTOPUSH-1,
+		{
+			{ (int)AUTOPUSH_OFF,	"off" },
+			{ (int)AUTOPUSH_ENEMY,	"enemy" },
+			{ (int)AUTOPUSH_TEAM,	"team" },
+			{ (int)AUTOPUSH_BOTH,	"both" },
+		},
+	},
+	{ "misc_autopush_dist",	"96.0",			SETTING_FLOAT,	(void*)&eth32.settings.autoPushDistance,
+		"maximum distance to player before pushing",
+		0.0, 256.0,
+	},
+};
